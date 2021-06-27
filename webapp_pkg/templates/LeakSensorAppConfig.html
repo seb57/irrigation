@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+
+
+{% block  content %}
+<form method="post" action="#"> 
+    {{ form.csrf_token() }}
+
+
+    <div class="container">
+        <div class="row align-items-center">
+           <h1 class="bd-title col">Leak Sensor Configuration</h1>
+        </div>
+
+        <div class="row">
+            <div class="col text-right">  <input class="btn btn-primary" type="submit" value="Save" name="save">       </div>
+            <div class="col">  <input class="btn btn-primary" type="submit" value="Reset" name="reset"  data-toggle="tooltip" data-placement="left" title="Tooltip on left">   </div>
+            <div class="col">  <a class="btn btn-primary"  data-placement="left" href="/LeakSensorAppConfig">Cancel</a>         </div>
+        </div>
+
+
+        <div class="row align-items-center" >
+                
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                 {% for category, message in messages %} <div id='message_id_field' class="col mt-4 alert text-center alert-{{ category }}"> {{ message }}  </div>  {% endfor %}
+                {% else %}
+                <div id='message_id_field' class="col alert  text-center mt-5 mb-3"> </div>
+                {% endif %}
+                {% endwith %}            
+            </div>
+
+    </div>
+
+    <div class="container">
+            {% for thisform in form  if not thisform.type == 'CSRFTokenField' %}
+                {% if 'new_section' in thisform.name  %}
+                  {% include "section_header.html" %}
+                
+                {% elif 'add_row_' in thisform.name  %}
+                <div class="row align-items-center mt-5"> </div>
+                {% else %}
+                 <div class="row align-items-center mt-3" >
+                    <div class="col-5 text-right"> {{ thisform.label }} </div>                        
+                         {% if thisform.type == 'BooleanField' %}
+                            {%  set row_class = 'col-1 ml-0' %}
+                         {% else %}
+                             {%  set row_class = 'col-3 ml-2' %}
+                         {% endif %}
+
+                        {% if thisform.errors %}
+                            <div class="{{row_class}} group-form is-invalid"> {{ thisform(class='form-control is-invalid') }}</div>
+                            <div class="invalid-feedback text-center">{% for error in thisform.errors %}<span>{{ error }}</span>{% endfor %}</div>
+                        {% else %}
+                            <div class="{{row_class}} group-form"> {{ thisform }}</div>
+                        {% endif %}
+                         
+
+                    </div>
+                {% endif %}
+
+
+
+                {% endfor %}
+        </div>
+    </div>
+    
+</form>
+ {% endblock  %}
+
+
+ {% block  title %} main {% endblock  %}

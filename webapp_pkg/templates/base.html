@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+    <!-- Font Awesome 4 Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+
+    <script src="https://kit.fontawesome.com/a076d05399.js"></script>
+    <title>
+            {% block  title %}
+            default title
+            {% endblock  %}
+        </title>
+
+        <nav class="navbar navbar-expand-sm bg-dark navbar-dark">
+            <ul class="navbar-nav">
+                <li class="nav-item"></li> <a class="nav-link {% if pagename == 'IrrigationControllerAppConfig' %} active {% endif %}"  href="/IrrigationControllerAppConfig">Irrigation Config</a>   </li>
+                <li class="nav-item"></li>  <a class="nav-link {% if pagename == 'LogViewer' %} active {% endif %}"  href="/LogViewer">Logs</a>   </li>
+                <li class="nav-item"></li>  <a class="nav-link {% if pagename == 'wifi' %} active {% endif %}"  href="/Wifi">Wifi</a>   </li>
+               <!-- <li class="nav-item"></li>  <a class="nav-link {% if pagename == 'LeakSensorAppConfig' %} active {% endif %}"  href="/LeakSensorAppConfig">LeakSensor Config</a>   </li> -->
+            </ul>
+
+             <div class="col-3 offset-md-5" id="TimeAndDate" style="color:white" >{{time}}</div>
+        </nav>        
+
+    </head>
+    <body>
+       
+        {% block  content %}
+        temporary data
+        {% endblock  %}
+
+        <div id="log"></div>
+        <div id="log1"></div>
+    </body>
+ 
+<!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js" integrity="sha256-yr4fRk/GU1ehYJPAs8P4JlTgu0Hdsp4ZKrx8bDEDC3I=" crossorigin="anonymous"></script>
+
+    <script>
+$(".nav a").on("click", function(){
+   $(".nav").find(".active").removeClass("active");
+   $(this).parent().addClass("active");
+});
+
+    </script>
+
+</form>
+<!--
+<script>
+    $(document).ready(function(){
+        $('[data-toggle="tooltip"]').tooltip();   
+    });
+</script>
+-->
+<script>
+
+  const numInputs = document.querySelectorAll('input[type=number]')
+  
+  numInputs.forEach(function(input) {
+    input.addEventListener('change', function(e) {
+      if (e.target.value == '') {
+        e.target.value = 0
+      }
+    })
+  })
+  </script>
+
+
+<script>
+
+{% block  script_block %}
+    var debug = "True"
+{% endblock  %}
+
+
+
+
+$(document).ready(function() {
+            // Use a "/test" namespace.
+            // An application can open a connection on multiple namespaces, and
+            // Socket.IO will multiplex all those connections on a single
+            // physical channel. If you don't care about multiple channels, you
+            // can set the namespace to an empty string.
+            namespace = '/test';
+
+            // Connect to the Socket.IO server.
+            // The connection URL has the following format, relative to the current page:
+            //     http[s]://<domain>:<port>[/<namespace>]
+            var socket = io(namespace);
+
+            // Event handler for new connections.
+            // The callback function is invoked when a connection with the
+            // server is established.
+            socket.on('connect', function() {
+                socket.emit('my_event', { data:  "{{pagename}}"   });        
+            });
+
+            // Event handler for server sent data.
+            // The callback function is invoked whenever the server emits data
+            // to the client. The data is then displayed in the "Received"
+            // section of the page.
+            socket.on('my_response', function(msg, cb) {
+                if (debug == "True") {
+                    $('#log').append('<br>' + $('<div/>').text('Received #' + msg.count + ': ' + msg.data).html());
+                    if (cb)
+                        cb();
+                }
+            });
+
+            socket.on('txt_element_id_update', function(msg) {
+               document.getElementById(msg.elementid).innerHTML = msg.txt
+               if (msg.addClass != ""){
+                  document.getElementById(msg.elementid).classList.add(msg.addClass);
+               }
+               if (msg.RemoveClass !=""){
+                  if ( document.getElementById(msg.elementid).classList.contains(msg.RemoveClass) ) {
+                    document.getElementById(msg.elementid).classList.remove(msg.RemoveClass);
+                  }
+               } 
+             });
+
+            socket.on('reload', function(msg) {
+               //window.location.reload()
+               //window.location.assign("http://frontgarden.local/");
+
+             });
+
+             socket.on('element_id_value_update', function(msg) {
+                if (debug == "True") { $('#log').append('<br>' + $('<div/>').text('element_id_value_update: ' + msg.value).html()); }
+                document.getElementById(msg.id).value = msg.value               
+             });
+
+
+             socket.on('progress_bar_update', function(msg) {
+                if (debug == "True") { $('#log').append('<br>' + $('<div/>').text('progress_bar_update: ' + msg).html()); }
+                $(msg.elementid).text(msg.value);
+                $(msg.elementid).attr("aria-valuenow", msg.value);
+                $(msg.elementid).css("width", msg.value);
+
+             });
+
+            socket.on("update_time", function(msg) {
+                $('#TimeAndDate').text(msg.txt);
+            });
+
+            socket.on('progress_bar_update1', function(msg) {
+                if (debug == "True") { $('#log').append('<br>' + $('<div/>').text('progress_bar_update1: ' + msg.value + msg.elementid).html());}
+                $(msg.elementid).text(msg.value);
+                if (msg.value == "on") {
+                    $(msg.elementid).addClass("progress-bar-animated");
+                } else {
+                    $(msg.elementid).removeClass("progress-bar-animated");
+                }
+             });
+
+             socket.on('status_icon_update', function(msg) {
+                if (debug == "True") { $('#log').append('<br>' + $('<div/>').text('status_icon_update: ' + msg.value).html());}
+                if (msg.value == "online"){
+                    $('#'+msg.elementid+'_icon').removeClass("fa-skull-crossbones");
+                    $('#'+msg.elementid+'_icon').addClass("fa-heart");
+                    $('#'+msg.elementid+'_progress_bar').addClass("progress-bar-animated");
+                } else {
+                    $('#'+msg.elementid+'_icon').removeClass("fa-heart");
+                    $('#'+msg.elementid+'_icon').addClass("fa-skull-crossbones");
+                    $('#'+msg.elementid+'_progress_bar').removeClass("progress-bar-animated");
+                }
+             });
+
+
+        
+
+            // Handlers for the different forms in the page.
+            // These accept data from the user and send it to the server in a
+            // variety of ways
+            $('form#emit').submit(function(event) {
+                socket.emit('my_event', {data: $('#emit_data').val()});
+                return false;
+            });
+            $('form#broadcast').submit(function(event) {
+                socket.emit('my_broadcast_event', {data: $('#broadcast_data').val()});
+                return false;
+            });
+            $('form#join').submit(function(event) {
+                socket.emit('join', {room: $('#join_room').val()});
+                return false;
+            });
+            $('form#leave').submit(function(event) {
+                socket.emit('leave', {room: $('#leave_room').val()});
+                return false;
+            });
+            $('form#send_room').submit(function(event) {
+                socket.emit('my_room_event', {room: $('#room_name').val(), data: $('#room_data').val()});
+                return false;
+            });
+            $('form#close').submit(function(event) {
+                socket.emit('close_room', {room: $('#close_room').val()});
+                return false;
+            });
+            $('form#disconnect').submit(function(event) {
+                socket.emit('disconnect_request');
+                return false;
+            });
+
+            {% block  script %}
+            {% endblock  %}
+    
+        })
+</script>
+</html>

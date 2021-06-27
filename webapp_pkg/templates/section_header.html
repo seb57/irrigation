@@ -1,0 +1,25 @@
+
+{% if 'add_new_section_' in thisform.name  %}
+<div class="container">
+
+            <div class="row align-items-center" >
+                <div class="col" >  <hr style="height:2px;border-width:2;color:rgb(0, 225, 255);background-color:rgb(0, 225, 255)"> </hr> </div>
+            </div>
+            <div class="row align-items-center" >
+                
+                <div class="col group-form">  <b>{{ thisform.label }} </b></div>
+{% elif 'incr_new_section_'  in thisform.name  %}
+                    <div class="col-0 align-self-end mr-3 group-form"> {{ thisform }}</div>
+{% elif 'decr_new_section_'  in thisform.name  %}
+                    <div class="col-0 align-self-end mr-3 group-form"> {{ thisform }}</div>
+                </div>
+            </div>
+{% else %}
+            </div>
+        </div>
+{% endif %}
+
+{% if 'add_new_section_no_button' in thisform.name  %}
+</div>
+</div>
+{% endif %}

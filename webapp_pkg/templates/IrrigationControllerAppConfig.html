@@ -1,0 +1,192 @@
+
+
+
+
+{% extends 'base.html' %}
+
+
+{% block  content %}
+<form method="post" action="#"> 
+    {{ form.csrf_token() }}
+
+
+    <div class="container">
+        <div class="row align-items-center">
+           <h1 class="bd-title col">Irrigation Controller Configuration  </i></h1>
+        </div>
+
+        <div class="row align-items-center" >
+            <div class="col" >  <hr style="height:2px;border-width:2;color:rgb(0, 225, 255);background-color:rgb(0, 225, 255)"> </hr> </div>
+        </div>
+
+ 
+
+        <div class="row">
+            <div class="col-md-2 col-lg-2 text-sm-lef text-md-right" > {{scheduler.name}} status: </div>
+            <div class="col-md-1 col-lg-1" > <i id={{scheduler.name}}_icon {% if 'on'  in scheduler.field_status['status'] %} class="fas fa-heart" {% else %} class="fas fa-skull-crossbones" {% endif %}> </i></div>
+            <div class="col-md-2 col-lg-1" > Timer1: </div>
+            <div class="col-md-2 col-lg-3 progress">
+                <div id=timer1_progress_bar class="progress-bar progress-bar-striped {% if  scheduler.field_status['timer1'] == 'on' %} progress-bar-animated" {% endif %}
+                role="progressbar" aria-valuenow=100 aria-valuemin="0" aria-valuemax="100" style='width:100%'> {{ scheduler.field_status['timer1']}} </div>
+            </div>
+            <div class="col-md-2 col-lg-1" > Timer2: </div>
+            <div class="col-md-2 col-lg-3 progress">
+                <div id=timer2_progress_bar class="progress-bar progress-bar-striped {% if  scheduler.field_status['timer2']  == 'on' %} progress-bar-animated" {% endif %}
+                role="progressbar" aria-valuenow=100 aria-valuemin="0" aria-valuemax="100" style='width:100%'> {{ scheduler.field_status['timer2']}} </div>
+            </div>
+        </div>
+
+        <div class="row align-items-center" >
+            <div class="col" >  <hr style="height:2px;border-width:2;color:rgb(0, 225, 255);background-color:rgb(0, 225, 255)"> </hr> </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-2 col-lg-2 text-sm-lef text-md-right" > {{tank.field_status['status']}} status: </div>
+            <div class="col-md-1" > <i id={{tank.name}}_icon {% if 'on' in tank.field_status['status'] %} class="fas fa-heart" {% else %} class="fas fa-skull-crossbones" {% endif %}> </i></div>
+            <div class="col-md-1" > Level: </div>
+            <div class="col-md-6 progress">
+                <div id=tank_progress_bar class="progress-bar progress-bar-striped {% if  'on' in tank.field_status['status'] %} progress-bar-animated" {% endif %}
+                role="progressbar" aria-valuenow={{tank.field_status["level"]}} aria-valuemin="0" aria-valuemax="100" style='width: {{tank.field_status["level"]}}%'> {{tank.field_status['level']}} % </div>
+            </div>
+        </div>
+
+
+
+        <div class="row align-items-center" >
+            <div class="col" >  <hr style="height:2px;border-width:2;color:rgb(0, 225, 255);background-color:rgb(0, 225, 255)"> </hr> </div>
+        </div>
+
+
+        <div class="row align-items-center" >
+            <div class="mx-auto">
+                <input class="mt-2 mb-2 ml-3 btn btn-primary" type="submit" value="Save" name="save">      
+                <input class="mt-2 mb-2 ml-3 btn btn-primary" type="submit" value="Reset" name="reset"  data-toggle="tooltip" data-placement="left" title="Tooltip on left">  
+                <a class="mt-2 mb-2 ml-3 btn btn-primary"  data-placement="left" href="/IrrigationControllerAppConfig">Cancel</a>   
+            </div>
+        </div>
+
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+         {% for category, message in messages %}
+            <div class="mt-4 alert  alert-{{ category }} text-center" >
+                <div id='message_id_field' style="height:100px">  {{ message }} </div>
+            </div>
+         {% endfor %}
+        {% else %}
+        <div class="mt-4 alert text-center" >
+            <div id='message_id_field' style="height:100px"> </div>
+        </div>
+        {% endif %}
+        {% endwith %} 
+
+        <div class="form-group">
+            <div> {{log.filecontent(rows='10')}} </div>
+
+        </div>
+
+       
+
+    </div>
+
+    <div class="container">
+            {% for thisform in form  if not thisform.type == 'CSRFTokenField' %}
+                {% if 'new_section' in thisform.name  %}
+                  {% include "section_header.html" %}
+                {% elif 'add_row_' in thisform.name  %}
+                <div class="row align-items-center mt-5"> </div>
+                {% else %}
+
+<!--                         {% if '_force_on'  in thisform.name  %}
+                        <div class="row align-items-center" >
+                        {% endif %} 
+                        {% if '_manual_'  in thisform.name  %}
+                            <a class="col-sm-2 mt-2 mb-2 text-sm-left text-md-right"> {{thisform.label}} </a>
+                            <div class="col-sm-1 ml-2 mt-2 mb-2"> {{thisform}}</div>
+                        {% endif %} 
+                        {% if '_manual_skip'  in thisform.name  %}
+                        </div>
+                        <div class="row align-items-center mt-5"> </div>
+
+                        {% endif %}  -->
+
+                        {% if '_Level'  in thisform.name  %}
+                        <div class="row align-items-center" >
+                            <div class="col-sm-3 text-sm-left text-md-right"> {{thisform.label}} </div>
+                            <div class="col-sm-2 ml-2"> {{thisform}}</div>
+                        </div>
+                        {% endif %} 
+
+                        {% if '_mode_select'  in thisform.name  %}
+                        <div class="row align-items-center" >
+                            <a class="col-sm-2 mt-2 mb-4 text-sm-left text-md-right"> {{thisform.label}} </a>
+                            <div class="col-auto ml-2 mt-2 mb-4"> {{thisform}}</div>
+                            <input class="mt-2  ml-3 mt-2 mb-4 btn btn-primary" type="submit" value="Submit" name="submit">      
+
+                        </div>
+                        {% endif %} 
+
+                        {% if '_ON_HH'  in thisform.name  %}
+                        <div class="row align-items-center" >
+                            <div class="col-sm-3 text-sm-left text-md-right"> On time </div>
+                            <div class="col-sm-2 ml-2"> {{thisform}}</div>
+                            <div class="col-sm-1 col-sm text-center">:</div>
+                        {% endif %} 
+
+
+                        {% if  '_ON_MM' in thisform.name %}
+                                <div class="col-sm-2 ml-2"> {{thisform}} </div>
+                            </div>
+                        {% endif %} 
+
+
+                        {% if 'ON_duration'  in thisform.name  %}
+                            <div class="row align-items-center mt-3" >
+                                <div class="col-sm-3 text-sm-left text-md-right"> Duration </div>
+                                <div class="col-sm-2 ml-2"> {{thisform}} </div>
+                                <div class="col  text-sm-right text-md-left">minutes</div>
+                            </div>
+                        {% endif %} 
+
+
+                        {% if '_enabled'  in thisform.name  %}
+                            <div class="row align-items-center mt-3" >
+                                <div class="col-3 text-right "> enabled </div>
+                                <div class="col-md-1 ml-1 text-center 2"> {{thisform}} </div>
+                            </div>
+                        {% endif %} 
+                        
+
+                        {% if '_repeat'  in thisform.name  and 'monday' in thisform.name %}
+                            <div class="row align-items-center mt-3" >
+                                <div class="col-3 text-right "> Repeat </div>
+                        {% endif %} 
+                            {% if '_repeat'  in thisform.name  and 'day' in thisform.name %}
+                                    <div class="col-md-1 ml-1 text-center ">{{thisform.label}} {{thisform}} </div>
+                                    {% if '_repeat'  in thisform.name  and 'sunday' in thisform.name %}
+                                    </div>
+                                     {% endif %} 
+                            {% endif %} 
+
+  
+                {% endif %}
+
+
+
+            {% endfor %}
+        </div>
+    </div>
+    
+</form>
+
+
+ {% endblock  %}
+
+
+ {% block  script_block %}
+ var debug = "{{debug}}"
+ {% endblock  %}
+ 
+ 
+  {% block  title %} main {% endblock  %}
+ 

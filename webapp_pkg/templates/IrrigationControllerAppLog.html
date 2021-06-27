@@ -1,0 +1,83 @@
+
+
+
+
+{% extends 'base.html' %}
+
+
+{% block  content %}
+<form method="post" action="#"> 
+    {{ form.csrf_token() }}
+
+
+    <div class="container">
+        <div class="row align-items-center">
+           <h1 class="bd-title col">Irrigation Controller Log  </i></h1>
+        </div>
+
+
+        <div class="row align-items-center" >
+            <div class="col" >  <hr style="height:2px;border-width:2;color:rgb(0, 225, 255);background-color:rgb(0, 225, 255)"> </hr> </div>
+        </div>
+
+
+        <div class="row  align-items-center">
+            <div class="col-2 text-right"> {{form.logfile_selector.label}} </div>
+            <div class="col-auto">  {{form.logfile_selector}} </div> 
+            <div class="col ml-2">  <button class="btn btn-primary" id="openfile">Open</button> </div> 
+        </div>
+
+    </form>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+     {% for category, message in messages %}
+        <div class="mt-4 alert  alert-{{ category }} text-center" >
+            <div id='message_id_field' style="height:100px">  {{ message }} </div>
+        </div>
+     {% endfor %}
+    {% else %}
+    <div class="mt-4 alert text-center" >
+        <div id='message_id_field' style="height:100px"> </div>
+    </div>
+    {% endif %}
+    {% endwith %} 
+
+        <div class="row align-items-center" >
+            <div class="col" >  <hr style="height:2px;border-width:2;color:rgb(0, 225, 255);background-color:rgb(0, 225, 255)"> </hr> </div>
+        </div>
+<!--
+        <div class="row align-items-center" >
+                <select id="logselect">
+                    <option value="VOLTAGE">Voltage</option>
+                    <option value="LEAK">Leak</option>
+                    <option value="CMD LOG">Command log</option>
+                    <option value="APP LOG">app log</option>
+                </select>
+
+        </div>
+!-->
+        <!--  <div class="row align-items-center" >   <div class="col"> <textarea rows="25" cols="50" id="logfiletext"></textarea>  </div></div>
+                            <textarea  class="form-control" rows="30"  id="logfiletext"> log['content']}}</textarea>
+
+            !--> 
+
+            <div class="form-group">
+                <label >{{form.filecontent.label}}</label>
+                <div> {{form.filecontent(rows='30')}} </div>
+
+            </div>
+
+    </div>
+
+
+{% endblock  %}
+
+{% block  script_block %}
+var debug = "{{debug}}"
+{% endblock  %}
+
+
+ {% block  title %} log {% endblock  %}
+
+ 

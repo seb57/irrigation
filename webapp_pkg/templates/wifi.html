@@ -1,0 +1,125 @@
+
+
+
+
+{% extends 'base.html' %}
+
+
+{% block  content %}
+{% from "_formhelpers.html" import render_field %}
+
+<form method="post" action="#"> 
+    {{ access_point_form.csrf_token() }} 
+
+
+    <div class="container">
+        <div class="row align-items-center">
+           <h1 class="bd-title col">Wifi Configuration  </i></h1>
+        </div>
+
+
+        <div class="row align-items-center" >
+            <div class="col" >  <hr style="height:2px;border-width:2;color:rgb(0, 225, 255);background-color:rgb(0, 225, 255)"> </hr> </div>
+        </div>
+
+ 
+
+        <div class="row align-items-center" >
+            <div class="mx-auto">
+                <input class="mt-2 mb-2 ml-3 btn btn-primary" type="submit" value="Save" name="save">      
+                <input class="mt-2 mb-2 ml-3 btn btn-primary" type="submit" value="Reset" name="reset"  data-toggle="tooltip" data-placement="left" title="Tooltip on left">  
+            </div>
+        </div>
+
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+         {% for category, message in messages %}
+            <div class="mt-4 alert  alert-{{ category }} text-center" >
+                <div id='message_id_field' style="height:50px">  {{ message }} </div>
+            </div>
+         {% endfor %}
+        {% else %}
+        <div class="mt-4 alert text-center" >
+            <div id='message_id_field' style="height:50px"> </div>
+        </div>
+        {% endif %}
+        {% endwith %} 
+
+    </div>
+
+    <div class="container">
+            
+
+
+        <div class="row align-items-center" >
+            <div class="col" >  <hr style="height:2px;border-width:2;color:rgb(0, 225, 255);background-color:rgb(0, 225, 255)"> </hr> </div>
+        </div>
+
+        <div class="row align-items-center" >
+            <div class="col group-form">  <b>Current Connection</b></div>
+        </div>
+        {% for thisform in wifistatus_form  if not thisform.type == 'CSRFTokenField' %}
+            <div class="row align-items-center mt-3" >
+                <div class="col-5 text-right"> {{ thisform.label }} </div>                        
+                <div class="col-5 group-form"> {{ thisform }}</div>
+            </div>
+            {% endfor %}
+
+        <div class="row align-items-center" >
+            <div class="col" >  <hr style="height:2px;border-width:2;color:rgb(0, 225, 255);background-color:rgb(0, 225, 255)"> </hr> </div>
+        </div>
+
+
+        <div class="row align-items-center" >
+            <div class="col group-form">  <b>Host Wireless Access Point</b></div>
+        </div>
+
+        {% for thisform in access_point_form  if not thisform.type == 'CSRFTokenField' %}
+        <div class="row align-items-center mt-3" >
+            <div class="col-5 text-right"> {{ thisform.label }} </div>                        
+            {{ render_field(thisform, 'col-5 group-form') }}
+
+        </div>
+        {% endfor %}
+
+        <div class="row align-items-center" >
+            <div class="col" >  <hr style="height:2px;border-width:2;color:rgb(0, 225, 255);background-color:rgb(0, 225, 255)"> </hr> </div>
+        </div>
+
+        <div class="row align-items-center" >
+            <div class="col group-form">  <b>Client Wifi Settings (Managed Mode)</b></div>
+        </div>
+
+        {% for thisform in wifi_form  if not thisform.type == 'CSRFTokenField' %}
+        <div class="row align-items-center mt-3" >
+            <div class="col-5 text-right"> {{ thisform.label }} </div>
+            
+            {{ render_field(thisform, 'col-5 group-form') }}
+        
+        </div>
+        {% endfor %}
+
+    </div>
+    
+</form>
+<script>
+    document.getElementById("scan_field").onclick = function() {myFunction()};
+    
+    function myFunction() {
+      document.getElementById("message_id_field").innerHTML = "scanning..., please wait";
+      document.getElementById("message_id_field").classList.add('alert-warning');
+    }
+</script>
+
+ {% endblock  %}
+
+
+ {% block  script_block %}
+ var debug = "{{debug}}"
+ {% endblock  %}
+ 
+ 
+  {% block  title %} main {% endblock  %}
+
+ 

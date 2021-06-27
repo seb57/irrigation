@@ -1,0 +1,14 @@
+[Unit]
+Description= Launch web server
+After=multi-user.target
+StartLimitIntervalSec=0
+[Service]
+Environment=PYTHONUNBUFFERED=1
+Type=idle
+Restart=always
+RestartSec=1
+User=root
+WorkingDirectory=/home/pi/bin
+ExecStart= /usr/bin/python3 /home/pi/bin/webapp.py
+[Install]
+WantedBy=multi-user.target
